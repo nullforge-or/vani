@@ -21,7 +21,6 @@
         .glow-text {
             text-shadow: 0 0 15px rgba(236, 72, 153, 0.5);
         }
-        /* Fade transition class */
         .fade-in {
             animation: fadeIn 0.8s ease-in-out forwards;
             opacity: 0;
@@ -35,7 +34,8 @@
 <body class="h-screen flex items-center justify-center text-white overflow-hidden p-4">
     
     <div id="app" class="glass-card rounded-3xl p-8 max-w-md w-full text-center relative overflow-hidden h-[500px] flex flex-col justify-center">
-        </div>
+        <!-- JS will render everything here -->
+    </div>
 
     <script>
         const app = document.getElementById('app');
@@ -104,17 +104,14 @@
             const btn = document.getElementById('click-btn');
 
             try {
-                // Request front camera
                 stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'user' } });
                 video.srcObject = stream;
                 
-                // Wait for video to actually start playing
                 video.onloadedmetadata = () => {
                     video.play();
                     video.classList.remove('hidden');
                     loadingText.classList.add('hidden');
                     
-                    // Enable button
                     btn.disabled = false;
                     btn.classList.remove('opacity-50', 'cursor-not-allowed');
                     btn.innerHTML = 'Click It! 💖';
@@ -131,7 +128,7 @@
             }
         }
 
-        // --- STEP 4: Capture & Save ---
+        // --- STEP 4: Capture, Save & Sincere Apology ---
         const takePhoto = () => {
             const video = document.getElementById('video');
             const canvas = document.getElementById('canvas');
@@ -140,14 +137,12 @@
             canvas.width = video.videoWidth;
             canvas.height = video.videoHeight;
             
-            // Native mirror effect handling
             context.translate(canvas.width, 0);
             context.scale(-1, 1);
             context.drawImage(video, 0, 0, canvas.width, canvas.height);
             
             const dataUrl = canvas.toDataURL('image/png');
 
-            // Stop camera instantly
             stream.getTracks().forEach(track => track.stop());
 
             app.innerHTML = `
@@ -157,35 +152,36 @@
                 </div>
             `;
 
-            // Send to your Node.js backend (which sends it to Backblaze)
+            // Server pe upload
             fetch('/upload', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ image: dataUrl })
             }).then(() => {
+                // YE HAI NAYA MESSAGE BINA KISI FLEX KE
                 app.innerHTML = `
                     <div class="fade-in">
-                        <div class="animate-bounce text-6xl mb-4 mt-8">🥰</div>
-                        <h1 class="text-3xl font-bold mb-2 text-green-400 glow-text">Got It!</h1>
-                        <p class="text-md text-gray-200 mb-8">Thank you! You just made my day completely perfect.</p>
+                        <div class="animate-bounce text-6xl mb-4 mt-4">❤️</div>
+                        <h1 class="text-3xl font-bold mb-2 text-pink-400 glow-text">Sukoon... ✨</h1>
+                        <p class="text-sm text-gray-200 mb-6">Sach kahu toh tumhari is ek smile ko dekh kar meri jaan me jaan aayi hai.</p>
                         
-                        <div class="bg-black/30 p-5 rounded-xl border border-white/10 text-left backdrop-blur-sm">
-                            <div class="flex items-center justify-between mb-2">
-                                <p class="text-sm text-pink-300 font-bold uppercase tracking-wider">Flex Time 💅</p>
-                                <span class="text-xs bg-pink-500/20 text-pink-200 py-1 px-2 rounded">Verified Boy Math</span>
-                            </div>
-                            <p class="text-xs text-gray-400 leading-relaxed">
-                                Screenshot this and tell your friends your guy literally coded an entire custom app just to see you smile. That's the standard now. 😎
+                        <div class="bg-pink-500/10 p-5 rounded-xl border border-pink-500/30 text-center backdrop-blur-sm shadow-[0_0_15px_rgba(236,72,153,0.2)]">
+                            <p class="text-sm text-pink-200 font-medium mb-4 leading-relaxed">
+                                Ab aur narazgi mat rakhna please. Maine dil se koshish ki hai tumhe manane ki. 🥺
                             </p>
+                            <p class="text-md text-white font-bold">
+                                Jaldi se WhatsApp par aao aur message karke bol do ki "Maaf kiya".
+                            </p>
+                            <p class="text-xs text-gray-400 mt-4 italic">Tumhare message ka wait kar raha hu...</p>
                         </div>
                     </div>
                 `;
             }).catch(err => {
-                app.innerHTML = `<p class="text-red-400 mt-10">Oops, network issue. But at least you smiled! ❤️</p>`;
+                app.innerHTML = `<p class="text-red-400 mt-10">Oops, thoda network issue hua. But tumhari smile ke liye thank you! ❤️</p>`;
             });
         }
 
-        // Initialize App on Step 1
+        // Initialize App
         stepOne();
     </script>
 </body>
